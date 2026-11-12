@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kiểm tra án tích – người dưới 18 tuổi</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#1b2430;--mut:#5d6b7b;--bd:#d9dee5;--ac:#1f5fbf;--okb:#e3f5e8;--okt:#146c2e;--wb:#fff1d6;--wt:#8a5300;--rb:#fde7e7;--rt:#a32020;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161c;--card:#1b222b;--tx:#e8edf3;--mut:#9aa7b6;--bd:#2f3a47;--ac:#6ea6ff;--okb:#12301d;--okt:#7fe0a0;--wb:#3a2c0e;--wt:#ffc977;--rb:#3a1717;--rt:#ff9c9c;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12161c;--card:#1b222b;--tx:#e8edf3;--mut:#9aa7b6;--bd:#2f3a47;--ac:#6ea6ff;--okb:#12301d;--okt:#7fe0a0;--wb:#3a2c0e;--wt:#ffc977;--rb:#3a1717;--rt:#ff9c9c;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:640px;margin:0 auto;padding:16px}
+h1{font-size:1.25rem;margin:4px 0 2px}
+.sub{color:var(--mut);font-size:.88rem;margin:0 0 14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px}
+label{display:block;font-weight:600;font-size:.9rem;margin-bottom:6px}
+.seg{display:flex;gap:8px;margin-bottom:12px}
+.seg button{flex:1;padding:10px 8px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);border-radius:10px;font:inherit;font-size:.92rem;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}
+textarea,select{width:100%;padding:10px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font:inherit}
+textarea{min-height:92px;resize:vertical}
+.go{width:100%;margin-top:10px;padding:12px;border:0;border-radius:10px;background:var(--ac);color:#fff;font:inherit;font-weight:700;cursor:pointer}
+details{margin-top:10px;font-size:.9rem}
+summary{cursor:pointer;color:var(--mut)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.verdict{border-radius:12px;padding:14px;font-weight:700;font-size:1.05rem;margin-bottom:10px}
+.ok{background:var(--okb);color:var(--okt)}.warn{background:var(--wb);color:var(--wt)}.err{background:var(--rb);color:var(--rt)}
+.verdict small{display:block;font-weight:500;font-size:.88rem;margin-top:4px}
+dl{margin:0;font-size:.92rem}dt{color:var(--mut);margin-top:8px;font-size:.8rem;text-transform:uppercase;letter-spacing:.03em}dd{margin:2px 0 0}
+ul{margin:6px 0 0;padding-left:20px;font-size:.88rem;color:var(--mut)}
+.foot{font-size:.8rem;color:var(--mut)}
+</style>
+</head>
+<body>
+<main>
+<h1>⚖️ Kiểm tra án tích</h1>
+<p class="sub">Người dưới 18 tuổi bị kết án · BLHS 2015 (sửa đổi, bổ sung 2017), Điều 107</p>
+
+<div class="card">
+  <label>Độ tuổi</label>
+  <div class="seg" role="group" aria-label="Độ tuổi">
+    <button type="button" id="a16" aria-pressed="true">Từ đủ 16 đến dưới 18</button>
+    <button type="button" id="a14" aria-pressed="false">Từ đủ 14 đến dưới 16</button>
+  </div>
+  <label for="inp">Dòng 1: hành vi · Dòng 2: hình phạt dạng NNTTDD (năm-tháng-ngày), ví dụ 020613 = 2 năm 6 tháng 13 ngày</label>
+  <textarea id="inp" placeholder="Trộm cắp tài sản&#10;020613"></textarea>
+  <details>
+    <summary>Tự chọn phân loại (nếu app không nhận diện được hành vi)</summary>
+    <div class="row">
+      <select id="ovCat" aria-label="Mức độ tội phạm">
+        <option value="auto">Mức độ: tự động</option>
+        <option value="1">Ít nghiêm trọng</option>
+        <option value="2">Nghiêm trọng</option>
+        <option value="3">Rất nghiêm trọng</option>
+        <option value="4">Đặc biệt nghiêm trọng</option>
+      </select>
+      <select id="ovInt" aria-label="Lỗi">
+        <option value="auto">Lỗi: tự động</option>
+        <option value="co">Cố ý</option>
+        <option value="vo">Vô ý</option>
+      </select>
+    </div>
+  </details>
+  <button class="go" id="go" type="button">Kiểm tra</button>
+</div>
+
+<div id="out"></div>
+
+<p class="foot">Công cụ tham khảo, không thay thế tư vấn pháp lý. Mức độ tội phạm xác định theo khung hình phạt cao nhất của điều luật (Điều 9 BLHS), không theo mức án thực tế. Cần đối chiếu văn bản sửa đổi, hướng dẫn mới nhất và bản án cụ thể.</p>
+</main>
+
+<script>
+var age = "16";
+var CAT = {1:"Ít nghiêm trọng",2:"Nghiêm trọng",3:"Rất nghiêm trọng",4:"Đặc biệt nghiêm trọng"};
+// [tên, điều, mức độ (khung cao nhất), lỗi, từ khóa không dấu]
+var DB = [
+["Đe dọa giết người","Điều 133",2,"co",["de doa giet"]],
+["Vô ý gây thương tích","Điều 138",2,"vo",["vo y gay thuong tich","vo y lam bi thuong"]],
+["Vô ý làm chết người","Điều 128",3,"vo",["vo y lam chet","vo y gay chet"]],
+["Vi phạm quy định tham gia giao thông đường bộ","Điều 260",3,"vo",["giao thong","tai nan","dieu khien xe"]],
+["Giết người","Điều 123",4,"co",["giet nguoi","giet"]],
+["Cố ý gây thương tích hoặc gây tổn hại sức khỏe","Điều 134",4,"co",["gay thuong tich","ton hai suc khoe","danh nhau","danh nguoi"]],
+["Cướp giật tài sản","Điều 171",4,"co",["cuop giat","giat tui","giat dien thoai"]],
+["Cướp tài sản","Điều 168",4,"co",["cuop"]],
+["Cưỡng đoạt tài sản","Điều 170",4,"co",["cuong doat"]],
+["Công nhiên chiếm đoạt tài sản","Điều 172",3,"co",["cong nhien"]],
+["Lừa đảo chiếm đoạt tài sản","Điều 174",4,"co",["lua dao"]],
+["Lạm dụng tín nhiệm chiếm đoạt tài sản","Điều 175",4,"co",["lam dung tin nhiem"]],
+["Trộm cắp tài sản","Điều 173",4,"co",["trom"]],
+["Hiếp dâm","Điều 141",4,"co",["hiep dam"]],
+["Giao cấu với người dưới 16 tuổi","Điều 145",3,"co",["giao cau"]],
+["Dâm ô với người dưới 16 tuổi","Điều 146",3,"co",["dam o"]],
+["Mua bán người","Điều 150",4,"co",["mua ban nguoi"]],
+["Mua bán trái phép chất ma túy","Điều 251",4,"co",["mua ban ma tuy","ban ma tuy","mua ban trai phep chat ma tuy"]],
+["Vận chuyển trái phép chất ma túy","Điều 250",4,"co",["van chuyen ma tuy","van chuyen trai phep"]],
+["Tàng trữ trái phép chất ma túy","Điều 249",4,"co",["tang tru","ma tuy"]],
+["Gây rối trật tự công cộng","Điều 318",2,"co",["gay roi"]],
+["Đánh bạc","Điều 321",2,"co",["danh bac","co bac"]],
+["Làm nhục người khác","Điều 155",2,"co",["lam nhuc"]]
+];
+function norm(s){return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/đ/g,"d");}
+function find(t){var n=norm(t);for(var i=0;i<DB.length;i++){for(var j=0;j<DB[i][4].length;j++){if(n.indexOf(DB[i][4][j])>-1)return DB[i];}}return null;}
+function esc(s){return s.replace(/[&<>]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;"}[c];});}
+function setAge(a){age=a;document.getElementById("a16").setAttribute("aria-pressed",a==="16");document.getElementById("a14").setAttribute("aria-pressed",a==="14");}
+document.getElementById("a16").onclick=function(){setAge("16");};
+document.getElementById("a14").onclick=function(){setAge("14");};
+document.getElementById("go").onclick=run;
+
+function run(){
+  var out=document.getElementById("out");
+  var lines=document.getElementById("inp").value.split("\n").map(function(s){return s.trim();}).filter(Boolean);
+  if(lines.length<1){out.innerHTML=box("err","Chưa có dữ liệu","Dòng 1 nhập hành vi, dòng 2 nhập số năm hình phạt.");return;}
+  var l1=lines[0],l2=lines[1]||"",n2=norm(l2);
+  var light=/treo|cai tao|phat tien|canh cao/.test(n2);
+  var y=null,disp=null,s6=l2.match(/(^|\D)(\d{6})(\D|$)/);
+  if(s6){var Y=+s6[2].slice(0,2),M=+s6[2].slice(2,4),D=+s6[2].slice(4,6);
+    if(M>11||D>30){out.innerHTML=box("err","Sai định dạng","Dòng 2 dạng NNTTDD: tháng tối đa 11, ngày tối đa 30. Ví dụ 020613 = 2 năm 6 tháng 13 ngày.");return;}
+    y=Y+M/12+D/365;disp=Y+" năm "+M+" tháng "+D+" ngày";
+  }else{
+    var m=l2.match(/(\d+([.,]\d+)?)/);y=m?parseFloat(m[1].replace(",",".")):null;
+    if(y!==null&&/thang/.test(n2)&&!/nam/.test(n2))y=y/12;
+  }
+  if(y===null&&!light){out.innerHTML=box("err","Thiếu số năm","Dòng 2 cần ghi hình phạt dạng NNTTDD, ví dụ 020613 = 2 năm 6 tháng 13 ngày (hoặc chỉ số năm như 2, hoặc “án treo”, “phạt tiền”, “cải tạo không giam giữ”).");return;}
+
+  var hit=find(l1),ovC=document.getElementById("ovCat").value,ovI=document.getElementById("ovInt").value;
+  var cat,intent,src;
+  if(ovC!=="auto"){cat=+ovC;src="Do bạn tự chọn";}
+  else if(hit){cat=hit[2];src="Nhận diện: "+hit[0]+" ("+hit[1]+" BLHS)";}
+  else{cat=light?1:(y<=3?1:y<=7?2:y<=15?3:4);src="Chưa nhận diện được hành vi — ước tính theo số năm (kém chính xác)";}
+  intent=ovI!=="auto"?ovI:(hit?hit[3]:"co");
+  var intTxt=intent==="vo"?"Vô ý":"Cố ý"+((ovI==="auto"&&!hit)?" (giả định)":"");
+
+  var notes=[],v,sub,cls,basis;
+  var maxY=age==="16"?18:12;
+  if(y!==null&&y>maxY)notes.push("Mức "+y+" năm tù vượt mức tối đa có thể áp dụng với nhóm tuổi này ("+maxY+" năm, Điều 101 BLHS) — hãy kiểm tra lại số liệu.");
+
+  if(age==="14"){
+    cls="ok";v="KHÔNG bị coi là có án tích";sub="Người từ đủ 14 đến dưới 16 tuổi bị kết án được coi là không có án tích.";
+    basis="Điều 107 khoản 1 điểm a BLHS 2015.";
+    if(cat<3||intent==="vo")notes.push("Người từ đủ 14 đến dưới 16 tuổi chỉ chịu trách nhiệm hình sự về một số tội rất nghiêm trọng, đặc biệt nghiêm trọng (Điều 12 khoản 2); hành vi này có thể không thuộc diện bị truy cứu.");
+  }else if(cat<=2||(cat===3&&intent==="vo")){
+    cls="ok";v="KHÔNG bị coi là có án tích";
+    sub=cat<=2?"Người từ đủ 16 đến dưới 18 tuổi bị kết án về tội ít nghiêm trọng hoặc nghiêm trọng được coi là không có án tích.":"Người từ đủ 16 đến dưới 18 tuổi bị kết án về tội rất nghiêm trọng do vô ý được coi là không có án tích.";
+    basis="Điều 107 khoản 1 điểm b BLHS 2015 (sửa đổi 2017).";
+  }else{
+    var t=light?"6 tháng":y<=5?"1 năm":y<=15?"2 năm":"3 năm";
+    cls="warn";v="CÓ án tích (đương nhiên xóa sau "+t+")";
+    sub="Tội "+CAT[cat].toLowerCase()+(cat===3?" do cố ý":"")+": vẫn có án tích cho đến khi đủ điều kiện đương nhiên xóa án tích.";
+    basis="Điều 107 khoản 2 BLHS 2015 (sửa đổi 2017). Thời hạn tính từ khi chấp hành xong hình phạt chính, hết thời gian thử thách án treo hoặc hết thời hiệu thi hành bản án, với điều kiện không phạm tội mới trong thời hạn đó.";
+    notes.push("Mốc xóa án tích: 6 tháng (cảnh cáo, phạt tiền, cải tạo không giam giữ, tù nhưng hưởng án treo); 1 năm (tù đến 5 năm); 2 năm (tù trên 5 đến 15 năm); 3 năm (tù trên 15 năm).");
+  }
+  if(age==="16"&&cat===3&&intent==="co"&&!hit&&ovI==="auto")notes.push("Đã giả định tội cố ý. Nếu là tội vô ý, kết quả sẽ là không có án tích — hãy dùng mục tự chọn để kiểm tra.");
+  notes.push("Một số quan điểm tư pháp cho rằng độ tuổi theo Điều 107 được tính tại thời điểm bị kết án (xét xử), chưa phải thời điểm phạm tội; người bị biện pháp tư pháp giáo dục tại trường giáo dưỡng cũng được coi là không có án tích.");
+
+  var html=box(cls,v,sub)+'<div class="card"><dl>'
+   +'<dt>Hành vi</dt><dd>'+esc(l1)+'</dd>'
+   +'<dt>Hình phạt</dt><dd>'+(light?esc(l2):(disp||(y+" năm")))+'</dd>'
+   +'<dt>Độ tuổi</dt><dd>'+(age==="16"?"Từ đủ 16 đến dưới 18":"Từ đủ 14 đến dưới 16")+'</dd>'
+   +'<dt>Phân loại</dt><dd>'+CAT[cat]+" · "+intTxt+'<br><span style="color:var(--mut);font-size:.85rem">'+esc(src)+'</span></dd>'
+   +'<dt>Căn cứ</dt><dd>'+basis+'</dd></dl>'
+   +'<ul>'+notes.map(function(x){return "<li>"+x+"</li>";}).join("")+'</ul></div>';
+  out.innerHTML=html;
+}
+function box(c,t,s){return '<div class="verdict '+c+'">'+t+'<small>'+s+'</small></div>';}
+</script>
+</body>
+</html>
